@@ -1,5 +1,5 @@
 from itertools import count
-from typing import Tuple, Iterable, Generator, NewType
+from typing import Tuple, Iterable, Generator, Hashable, TypeVar, Any
 from sys import argv
 
 example_rucksacks = [
@@ -36,6 +36,10 @@ def even(n: int) -> bool:
     return n % 2 == 0
 
 def compartments(rucksack: str) -> Tuple[str, str]:
+    """
+    >>> compartments('abcd')
+    ('ab', 'cd')
+    """
     if not even(len(rucksack)):
         raise Exception(f'rucksack cannot have uneven length')
     cutoff = len(rucksack) // 2 
@@ -48,7 +52,9 @@ def problem1(rucksacks: Iterable[str]) -> int:
         for first_comp, second_comp in map(compartments, rucksacks)
     )
 
-def groups(xs: Iterable['T'], size: int) -> Generator['T', None, None]:
+S = TypeVar('S')
+
+def groups(xs: Iterable[S], size: int) -> Generator[S, None, None]:
     """
     >>> list(groups([1,2,3,4], 2))
     [(1, 2), (3, 4)]
@@ -59,10 +65,22 @@ def groups(xs: Iterable['T'], size: int) -> Generator['T', None, None]:
         for offset in range(0, len(xs), size)
     )
 
+T = TypeVar('T', bound=Hashable)
+
+def intersection(*sets: Iterable[Iterable[T]]) -> set[T]:
+    """
+    >>> intersection('abc', 'cde')
+    {'c'}
+    """
+    state = set(sets[0])
+    for s in sets[1:]:
+        state.intersection_update(s)
+    return state
+
 def problem2(rucksacks: Iterable[str]) -> int:
     return sum(
-        priority(next(iter(set(a).intersection(set(b)).intersection(set(c)))))
-        for a, b, c in groups(rucksacks, 3)
+        priority(next(iter(intersection(*group))))
+        for group in groups(rucksacks, 3)
     )
 
 if __name__ == '__main__':
