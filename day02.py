@@ -17,7 +17,11 @@ class Shape(Enum):
     PAPER = 2
     SCISSORS = 3
 
+"""Mapping from characters to shapes"""
 Shapemap = Mapping[str, Shape]
+
+"""A Round is one move by "them" and one by "us"."""
+Round = Tuple[Shape, Shape]
 
 beats: Mapping[Shape, Shape] = {
     Shape.ROCK: Shape.SCISSORS,
@@ -52,13 +56,13 @@ def get_score(theirs: Shape, ours: Shape) -> int:
     """
     return shape_score[ours] + result_score[get_result(theirs, ours)]
 
-def problem1(rounds: Iterable[Tuple[Shape, Shape]]) -> int:
+def problem1(rounds: Iterable[Round]) -> int:
     return sum(
         get_score(theirs, ours)
         for theirs, ours in rounds
     )
 
-def rounds_from_file(path, shapemap: Shapemap) -> Generator[Tuple[Shape, Shape], None, None]:
+def rounds_from_file(path, shapemap: Shapemap) -> Generator[Round, None, None]:
     with open(path) as f:
         for line in f.readlines():
             theirs_char, ours_char = line.rstrip().split(' ')
