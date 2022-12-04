@@ -18,6 +18,17 @@
 (ert-deftest parse-line-test ()
   (should (equal (parse-line "1-2,3-4") '((1 2) (3 4)))))
 
+(defun pairs-from-file (path)
+  (let ((s (with-temp-buffer
+              (insert-file-contents path)
+              (buffer-string)))
+         (pairs))
+
+    (dolist (el (s-split "\n" s))
+      (unless (string-empty-p el)
+        (setq pairs (cons (parse-line el) pairs))))
+    pairs))
+
 (defun range-contains (a b)
   (let ((a0 (car a))
         (a1 (car (cdr a)))
@@ -58,16 +69,6 @@
            (range-contains b a))))
    pairs))
 
-(defun pairs-from-file (path)
-  (let ((s (with-temp-buffer
-              (insert-file-contents path)
-              (buffer-string)))
-         (pairs))
-
-    (dolist (el (s-split "\n" s))
-      (unless (string-empty-p el)
-        (setq pairs (cons (parse-line el) pairs))))
-    pairs))
   
 (let ((pairs (pairs-from-file "./day04.txt")))
   (print (count-containing pairs))
