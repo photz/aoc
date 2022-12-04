@@ -1,0 +1,37 @@
+create temp table raw_input (calories int);
+
+\copy raw_input from './day01.txt' with delimiter ',' csv
+
+create temp table elves as 
+  with with_row_number as (
+    select row_number() over () as row_number,
+           calories
+      from raw_input
+  ),
+  with_elf_id as (
+    select sum(case when calories is not null then 0 else 1 end) over (order by row_number) as elf_id,
+           calories
+      from with_row_number
+  )
+  select elf_id,
+         calories
+    from with_elf_id
+   where calories is not null;
+
+
+  select format('Problem 1: %s', sum(calories))
+    from elves
+group by elf_id
+order by sum(calories) desc
+limit 1;
+
+
+with top3_carriers as (
+    select elf_id, sum(calories) as total_calories
+      from elves
+  group by elf_id
+  order by sum(calories) desc
+     limit 3
+)
+select format('Problem 2: %s', sum(total_calories))
+  from top3_carriers;
