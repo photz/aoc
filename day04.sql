@@ -9,8 +9,8 @@ create temp table raw_pairs (a text, b text);
 
 create table pairs as select parse_range(a) as a, parse_range(b) as b from raw_pairs;
 
-select format('Part 1: %s', count(*)) from parsed where a @> b or b @> a;
+select format('Part 1: %s', count(*)) from pairs where a @> b or b @> a;
 
-select format('Part 2: %s', count(*)) from parsed where a && b;
+select format('Part 2: %s', count(*)) from pairs where a && b;
 
 
