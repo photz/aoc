@@ -1,6 +1,7 @@
-from typing import Tuple, Generator, Dict
+from typing import Tuple, Generator, Dict, Iterable, TypeVar
 import re
 from dataclasses import dataclass
+from functools import reduce, partial
 
 @dataclass
 class Move:
@@ -37,7 +38,8 @@ def read(path) -> Generator[Move, None, None]:
                 src = int(groups['src']),
                 dest = int(groups['dest']))
 
-def split_at(xs: list['T'], index: int) -> Tuple[list['T'], list['T']]:
+T = TypeVar('T')
+def split_at(xs: list[T], index: int) -> Tuple[list[T], list[T]]:
     """
     >>> split_at(['a', 'b'], 1)
     (['a'], ['b'])
@@ -45,7 +47,7 @@ def split_at(xs: list['T'], index: int) -> Tuple[list['T'], list['T']]:
     return xs[:index], xs[index:]
 
 
-def do_move(state: State, move: Move) -> State:
+def do_move(state: State, move: Move, reverse_order: bool = True) -> State:
 
     src_stack = state[move.src]
     dest_stack = state[move.dest]
@@ -55,7 +57,8 @@ def do_move(state: State, move: Move) -> State:
 
     src_stack_new, moving = split_at(src_stack, len(src_stack) - move.qty)
 
-    moving.reverse()
+    if reverse_order:
+        moving.reverse()
 
     dest_stack_new = [
         *dest_stack,
@@ -74,12 +77,12 @@ def tos(state: State) -> str:
         for stack in state.values()
     )
 
+def do_moves(initial: State, moves: Iterable[Move], reverse_order: bool = True) -> State:
+    return reduce(partial(do_move, reverse_order=reverse_order), moves, initial)
+
 if __name__ == '__main__':
-    moves = read('./day05.txt')
+    moves = list(read('./day05.txt'))
 
-    state = initial
+    print('Problem 1: %s' % tos(do_moves(initial, moves)))
 
-    for move in moves:
-        state = do_move(state, move)
-
-    print(tos(state))
+    print('Problem 2: %s' % tos(do_moves(initial, moves, reverse_order=False)))
