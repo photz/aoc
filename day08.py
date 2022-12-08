@@ -22,16 +22,8 @@ def fixture_big_example():
     yield read_grid("./day08.txt")
 
 
-def running_max_1d(row):
-    arr = np.zeros(len(row))
-    arr[0] = row[0]
-    for i in range(1, len(arr)):
-        arr[i] = max(arr[i - 1], row[i])
-    return arr
-
-
 def running_max_2d_lr(matrix):
-    return np.apply_along_axis(running_max_1d, 1, matrix)
+    return np.apply_along_axis(np.maximum.accumulate, 1, matrix)
 
 
 def test_running_max_2d(example):
