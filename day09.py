@@ -141,7 +141,7 @@ def test_part2():
         (Dir.Left, 25),
         (Dir.Up, 20),
     ]
-    assert part2(motions, 9) == 36
+    assert positions_visited(motions, 9) == 36
 
 
 if __name__ == "__main__":
