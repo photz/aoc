@@ -109,25 +109,7 @@ def test_trail4():
     assert trail(head, tail) == (2, 2)
 
 
-def part1(motions: Iterable[Motion]) -> int:
-    visited = set()
-
-    initial = 0, 0
-
-    tail = initial
-
-    visited.add(tail)
-
-    for head in get_positions(initial, motions):
-
-        tail = trail(head, tail)
-
-        visited.add(tail)
-
-    return len(visited)
-
-
-def part2(motions: Iterable[Motion], n_knots: int) -> int:
+def positions_visited(motions: Iterable[Motion], n_knots: int) -> int:
     visited = set()
 
     initial = 0, 0
@@ -165,5 +147,5 @@ def test_part2():
 if __name__ == "__main__":
     motions = list(read_input("./day09.txt"))
 
-    print(part1(motions))
-    print(part2(motions, 9))
+    print(positions_visited(motions, 1))
+    print(positions_visited(motions, 9))
