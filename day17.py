@@ -17,7 +17,7 @@ class Map(object):
 
     def _idx(self, x: int, y: int) -> int:
         if self.current_offset + self.preserve_rows <= y:
-            self.set_offset(y - self.preserve_rows + 1)
+            self._set_offset(y - self.preserve_rows + 1)
 
         return x + self.width * (y - self.current_offset)
 
@@ -30,11 +30,7 @@ class Map(object):
         assert 0 <= idx
         return self.array[idx]
 
-    def drop_row(self):
-        self.array >> self.width
-        self.current_offset += 1
-
-    def set_offset(self, new_offset: int):
+    def _set_offset(self, new_offset: int):
         assert self.current_offset <= new_offset
 
         self.array <<= self.width * (new_offset - self.current_offset)
@@ -222,7 +218,6 @@ def can_fall_further(shape_x, shape_y, shape, solidified):
 
 
 def simulate(cave_width: int, spawn_x: int, margin_y: int, shapes, gusts):
-
     solidified = Map(cave_width, 50)
 
     current_h = -1
