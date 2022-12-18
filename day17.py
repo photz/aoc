@@ -1,6 +1,4 @@
 import os
-from suffix_tree import Tree
-from datetime import datetime
 import pytest
 from typing import *
 from itertools import cycle, islice
@@ -14,12 +12,6 @@ class Map(object):
         self.preserve_rows = preserve_rows
         self.array = BitArray(width * preserve_rows)
         self.current_offset = 0
-
-    def _idx(self, x: int, y: int) -> int:
-        if self.current_offset + self.preserve_rows <= y:
-            self._set_offset(y - self.preserve_rows + 1)
-
-        return x + self.width * (y - self.current_offset)
 
     def set(self, x: int, y: int):
         idx = self._idx(x, y)
@@ -35,6 +27,12 @@ class Map(object):
 
         self.array <<= self.width * (new_offset - self.current_offset)
         self.current_offset = new_offset
+
+    def _idx(self, x: int, y: int) -> int:
+        if self.current_offset + self.preserve_rows <= y:
+            self._set_offset(y - self.preserve_rows + 1)
+
+        return x + self.width * (y - self.current_offset)
 
 
 def test_map_simple():
@@ -82,13 +80,7 @@ class Shape:
     shape: Tuple[int, ...]
 
     def points(self):
-        for i, v in enumerate(self.shape):
-
-            x = i % self.width
-            y = i // self.width
-
-            if v == 1:
-                yield x, y
+        yield from ((i % self.width, i // self.width) for i, v in enumerate(self.shape) if v == 1)
 
 
 shapes = {
